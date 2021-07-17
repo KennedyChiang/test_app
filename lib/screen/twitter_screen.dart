@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test_app/bloc/auth/auth_bloc.dart';
+import 'package:test_app/screen/add_tweet_screen.dart';
 
 const String _defaultAvatarPath = 'assets/images/icon-ninja-13.jpg';
 
@@ -17,6 +19,7 @@ class _TwitterScreenState extends State<TwitterScreen> {
       appBar: _appBar,
       drawer: drawer,
       body: _body,
+      floatingActionButton: _floatingActionButton,
     );
   }
 
@@ -70,5 +73,17 @@ class _TwitterScreenState extends State<TwitterScreen> {
             ),
           ],
         ),
+      );
+
+  Widget get _floatingActionButton => FloatingActionButton(
+        child: FaIcon(FontAwesomeIcons.commentMedical),
+        onPressed: () {
+          showCupertinoModalPopup(
+            context: context,
+            semanticsDismissible: true,
+            useRootNavigator: false,
+            builder: (modalContext) => AddTweetScreen(),
+          );
+        },
       );
 }
