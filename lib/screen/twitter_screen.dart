@@ -6,6 +6,7 @@ import 'package:test_app/bloc/auth/auth_bloc.dart';
 import 'package:test_app/screen/add_tweet_screen.dart';
 
 const String _defaultAvatarPath = 'assets/images/icon-ninja-13.jpg';
+const double _avatarSize = 60.0;
 
 class TwitterScreen extends StatefulWidget {
   @override
@@ -43,30 +44,37 @@ class _TwitterScreenState extends State<TwitterScreen> {
                 color: Colors.blue,
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  _avatar,
                   SizedBox(
-                    width: 60.0,
-                    height: 60.0,
-                    child: null == BlocProvider.of<AuthBloc>(context).photoUrl
-                        ? Image.asset(
-                            _defaultAvatarPath,
-                            fit: BoxFit.cover,
-                          )
-                        : FadeInImage(
-                            image: NetworkImage(
-                              BlocProvider.of<AuthBloc>(context).photoUrl!,
-                            ),
-                            placeholder: const AssetImage(_defaultAvatarPath),
-                            fit: BoxFit.cover,
-                          ),
+                    height: 8.0,
                   ),
-                  Text(BlocProvider.of<AuthBloc>(context).googleId ?? '-'),
-                  Text(BlocProvider.of<AuthBloc>(context).email ?? '-'),
+                  Text(
+                    BlocProvider.of<AuthBloc>(context).displayName ?? '-',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  Text(
+                    BlocProvider.of<AuthBloc>(context).email ?? '-',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
+                  ),
                 ],
               ),
             ),
             ListTile(
-              title: Text('SignOut'),
+              title: Text(
+                'SignOut',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
               onTap: () {
                 BlocProvider.of<AuthBloc>(context).add(GoogleSignOutEvent());
               },
@@ -85,5 +93,27 @@ class _TwitterScreenState extends State<TwitterScreen> {
             builder: (modalContext) => AddTweetScreen(),
           );
         },
+      );
+
+  Widget get _avatar => CircleAvatar(
+        radius: _avatarSize / 2,
+        child: ClipOval(
+          child: SizedBox(
+            width: _avatarSize,
+            height: _avatarSize,
+            child: null == BlocProvider.of<AuthBloc>(context).photoUrl
+                ? Image.asset(
+                    _defaultAvatarPath,
+                    fit: BoxFit.cover,
+                  )
+                : FadeInImage(
+                    image: NetworkImage(
+                      BlocProvider.of<AuthBloc>(context).photoUrl!,
+                    ),
+                    placeholder: const AssetImage(_defaultAvatarPath),
+                    fit: BoxFit.cover,
+                  ),
+          ),
+        ),
       );
 }
