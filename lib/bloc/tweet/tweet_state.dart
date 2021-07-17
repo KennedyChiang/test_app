@@ -4,3 +4,11 @@ part of 'tweet_bloc.dart';
 abstract class TweetState {}
 
 class TweetInitial extends TweetState {}
+
+class ReadTweetState extends TweetState {}
+
+class CreateTweetSuccessState extends TweetState {}
+
+class UpdateTweetSuccessState extends TweetState {}
+
+class DeleteTweetSuccessState extends TweetState {}

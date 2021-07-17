@@ -13,6 +13,9 @@ class TweetBloc extends Bloc<TweetEvent, TweetState> {
   Stream<TweetState> mapEventToState(
     TweetEvent event,
   ) async* {
-    // TODO: implement mapEventToState
+    if (event is CreateTweetEvent) {}
+    if (event is ReadTweetEvent) {}
+    if (event is UpdateTweetEvent) {}
+    if (event is DeleteTweetEvent) {}
   }
 }
