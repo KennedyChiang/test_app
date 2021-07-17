@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meta/meta.dart';
+import 'package:test_app/model/google_auth.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -12,6 +13,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  late GoogleAuthInfo _currentAuthInfo;
 
   AuthBloc() : super(AuthInitial());
 
@@ -21,12 +23,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async* {
     if (event is GoogleSignInEvent) {
       try {
-        var result = await _googleAuth();
-        if (result is GoogleSignInAuthentication) {
-          yield GoogleSignInSuccessState();
-        } else {
-          yield GoogleSignInFailState(result);
-        }
+        _currentAuthInfo = await googleAuth();
+        yield GoogleSignInSuccessState();
       } catch (e) {
         debugPrint('GoogleSignInEvent got exception: $e');
         yield GoogleSignInFailState(e);
@@ -46,16 +44,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   /// private method
   ///
 
-  Future<GoogleSignInAuthentication> _googleAuth() async {
-    GoogleSignIn googleSignIn = GoogleSignIn(
-      scopes: [
-        'email',
-      ],
-    );
-    final gSignIn = await googleSignIn.signIn();
-    return await gSignIn!.authentication;
-  }
-
   Future<void> _signOutFromGoogle() async {
     await _googleSignIn.signOut();
     await _auth.signOut();
@@ -63,9 +51,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   ///
 
-  String? get email => _googleSignIn.currentUser?.email;
+  String? get email => _currentAuthInfo.email;
 
-  String? get googleId => _googleSignIn.currentUser?.id;
+  String? get googleId => _currentAuthInfo.id;
 
-  String? get photoUrl => _googleSignIn.currentUser?.photoUrl;
+  String? get photoUrl => _currentAuthInfo.photoUrl;
+
+  String? get displayName => _currentAuthInfo.displayName;
 }
