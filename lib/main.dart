@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
                 if (authState is NoneAuthState) {}
                 if (authState is GoogleSignInSuccessState) {
                   return BlocProvider(
-                    create: (_) => TweetBloc(),
+                    create: (providerContext) => TweetBloc(providerContext),
                     child: TwitterScreen(),
                   );
                 }

@@ -7,7 +7,9 @@ part 'tweet_event.dart';
 part 'tweet_state.dart';
 
 class TweetBloc extends Bloc<TweetEvent, TweetState> {
-  TweetBloc() : super(TweetInitial());
+  final BuildContext context;
+
+  TweetBloc(this.context) : super(TweetInitial());
 
   @override
   Stream<TweetState> mapEventToState(
