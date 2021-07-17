@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test_app/bloc/auth/auth_bloc.dart';
 
 const String _defaultAvatarPath = 'assets/images/icon-ninja-13.jpg';
+const navigationBarItemWithConstraints = BoxConstraints.expand(width: 60.0);
 
 class AddTweetScreen extends StatefulWidget {
   @override
@@ -24,14 +25,23 @@ class _AddTweetScreenState extends State<AddTweetScreen> {
   ///
 
   AppBar get _appBar => AppBar(
+        elevation: 0.0,
         leading: IconButton(
+          padding: EdgeInsets.zero,
           icon: Text('Cancel'),
-          onPressed: () {},
+          constraints: navigationBarItemWithConstraints,
+          color: Theme.of(context).primaryColor,
+          onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          ElevatedButton(
-            onPressed: () {},
-            child: Text('Tweet'),
+          IconButton(
+            padding: EdgeInsets.zero,
+            icon: Text('Tweet'),
+            constraints: navigationBarItemWithConstraints,
+            color: Theme.of(context).primaryColor,
+            onPressed: () {
+              print('did pressed Tweet');
+            },
           ),
         ],
       );
