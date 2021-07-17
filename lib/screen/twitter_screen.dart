@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test_app/bloc/auth/auth_bloc.dart';
+import 'package:test_app/bloc/tweet/tweet_bloc.dart';
 import 'package:test_app/screen/add_tweet_screen.dart';
-
-const String _defaultAvatarPath = 'assets/images/icon-ninja-13.jpg';
-const double _avatarSize = 60.0;
+import 'package:test_app/view/avatar.dart';
 
 class TwitterScreen extends StatefulWidget {
   @override
@@ -30,8 +29,15 @@ class _TwitterScreenState extends State<TwitterScreen> {
   AppBar get _appBar => AppBar(title: Text('1-Person Twitter'));
 
   Widget get _body {
-    return Center(
-      child: Text('Twitter Screen'),
+    return BlocBuilder<TweetBloc, TweetState>(
+      builder: (tweetContext, tweetState) {
+        if (tweetState is TweetInitial) {
+          BlocProvider.of<TweetBloc>(context).add(ReadTweetEvent());
+        }
+        return Center(
+          child: Text('Twitter Screen'),
+        );
+      },
     );
   }
 
@@ -90,30 +96,19 @@ class _TwitterScreenState extends State<TwitterScreen> {
             context: context,
             semanticsDismissible: true,
             useRootNavigator: false,
-            builder: (modalContext) => AddTweetScreen(),
+            builder: (modalContext) => BlocProvider.value(
+              value: _authBloc,
+              child: BlocProvider.value(
+                value: _tweetBloc,
+                child: AddTweetScreen(),
+              ),
+            ),
           );
         },
       );
 
-  Widget get _avatar => CircleAvatar(
-        radius: _avatarSize / 2,
-        child: ClipOval(
-          child: SizedBox(
-            width: _avatarSize,
-            height: _avatarSize,
-            child: null == BlocProvider.of<AuthBloc>(context).photoUrl
-                ? Image.asset(
-                    _defaultAvatarPath,
-                    fit: BoxFit.cover,
-                  )
-                : FadeInImage(
-                    image: NetworkImage(
-                      BlocProvider.of<AuthBloc>(context).photoUrl!,
-                    ),
-                    placeholder: const AssetImage(_defaultAvatarPath),
-                    fit: BoxFit.cover,
-                  ),
-          ),
-        ),
-      );
+  Widget get _avatar => Avatar(authBloc: _authBloc);
+
+  AuthBloc get _authBloc => BlocProvider.of<AuthBloc>(context);
+  TweetBloc get _tweetBloc => BlocProvider.of<TweetBloc>(context);
 }
