@@ -9,6 +9,8 @@ class NoneAuthState extends AuthState {}
 
 class GoogleSignInSuccessState extends AuthState {}
 
+class GoogleSignInCancelState extends AuthState {}
+
 class GoogleSignInFailState extends AuthState {
   final dynamic error;
   GoogleSignInFailState(this.error);
