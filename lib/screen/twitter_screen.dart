@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:test_app/bloc/auth/auth_bloc.dart';
 import 'package:test_app/bloc/tweet/tweet_bloc.dart';
 import 'package:test_app/screen/add_tweet_screen.dart';
+import 'package:test_app/screen/edit_tweet_screen.dart';
 import 'package:test_app/view/avatar.dart';
 import 'package:test_app/view/tweet_cell.dart';
 
@@ -58,7 +59,44 @@ class _TwitterScreenState extends State<TwitterScreen> {
                   ),
                 ),
               ),
-              child: TweetCell(tweet: displayTweets[index]),
+              child: TweetCell(
+                tweet: displayTweets[index],
+                onTap: () {
+                  showCupertinoModalPopup(
+                    context: context,
+                    builder: (sheetContext) {
+                      return CupertinoActionSheet(
+                        actions: [
+                          CupertinoActionSheetAction(
+                            onPressed: () {
+                              Navigator.of(sheetContext).pop();
+                              showCupertinoModalPopup(
+                                context: context,
+                                semanticsDismissible: true,
+                                useRootNavigator: false,
+                                builder: (modalContext) => BlocProvider.value(
+                                  value: _authBloc,
+                                  child: BlocProvider.value(
+                                    value: _tweetBloc,
+                                    child: EditTweetScreen(
+                                      tweet: displayTweets[index],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text('Edit'),
+                          )
+                        ],
+                        cancelButton: CupertinoActionSheetAction(
+                          onPressed: () => Navigator.of(sheetContext).pop(),
+                          child: Text('cancel'),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
               onDismissed: (direction) {
                 if (direction == DismissDirection.endToStart) {
                   _tweetBloc.add(
