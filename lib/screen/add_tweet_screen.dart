@@ -76,7 +76,6 @@ class _AddTweetScreenState extends State<AddTweetScreen> {
             onPressed: _inputController.text.isEmpty
                 ? null
                 : () {
-                    print('did pressed Tweet: ${_inputController.text}');
                     _tweetBloc.add(
                       CreateTweetEvent(content: _inputController.text),
                     );
