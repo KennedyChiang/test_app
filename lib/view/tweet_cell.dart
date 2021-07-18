@@ -14,13 +14,34 @@ class TweetCell extends StatelessWidget {
     return ListTile(
       leading: Avatar(
         authBloc: _authBloc,
-        size: 40.0,
+        size: 46.0,
       ),
-      title: Text(
-        tweet.content,
-        maxLines: 10,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                _authBloc.displayName ?? '',
+                style: TextStyle(
+                  fontSize: 12.0,
+                ),
+              ),
+              Text(
+                '．${tweet.intervalTime}',
+                style: TextStyle(
+                  fontSize: 12.0,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
+          ),
+          Text(
+            tweet.content,
+            maxLines: 10,
+          ),
+        ],
       ),
-      subtitle: Text(tweet.time.toIso8601String()),
       onTap: this.onTap,
     );
   }

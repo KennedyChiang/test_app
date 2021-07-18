@@ -67,7 +67,6 @@ class TweetBloc extends Bloc<TweetEvent, TweetState> {
           return;
         }
         _readData = await _realtimeDB.once();
-        print('Data : ${_readData.value}');
         yield ReadTweetState();
       } catch (e) {
         debugPrint('ReadTweetEvent got exception: $e');
@@ -108,27 +107,13 @@ class TweetBloc extends Bloc<TweetEvent, TweetState> {
     }
   }
 
-  dynamic get displayContent {
-    try {
-      final data = _readData.value as Map<Object?, Object?>;
-      final id = BlocProvider.of<AuthBloc>(context).googleId ?? '';
-      if (id.isEmpty) {
-        return <String, dynamic>{};
-      }
-      return data[id];
-    } catch (e) {
-      debugPrint('displayContent got exception: $e');
-      return <Object?, Object?>{};
-    }
-  }
-
   List<Tweet> get displayTweets {
     try {
-      final data = _readData.value as Map<Object?, Object?>;
       final id = BlocProvider.of<AuthBloc>(context).googleId ?? '';
       if (id.isEmpty) {
         return <Tweet>[];
       }
+      final data = _readData.value as Map<Object?, Object?>;
       final userData = data[id] as Map<Object?, Object?>;
       final result = userData.keys.map((time) {
         final tweetData = userData[time] as Map<Object?, Object?>;

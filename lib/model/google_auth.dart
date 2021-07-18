@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 Future<GoogleAuthInfo> googleAuth() async {
@@ -7,7 +8,10 @@ Future<GoogleAuthInfo> googleAuth() async {
     ],
   );
   final result = await googleSignIn.signIn();
-  GoogleSignInAuthentication authentication = await result!.authentication;
+  if (false == result is GoogleSignInAccount) {
+    throw PlatformException(code: GoogleSignIn.kSignInCanceledError);
+  }
+  GoogleSignInAuthentication? authentication = await result!.authentication;
 
   return GoogleAuthInfo(
     displayName: result.displayName,

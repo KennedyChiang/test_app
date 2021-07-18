@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meta/meta.dart';
 import 'package:test_app/model/google_auth.dart';
@@ -27,6 +28,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         yield GoogleSignInSuccessState();
       } catch (e) {
         debugPrint('GoogleSignInEvent got exception: $e');
+        if (e is PlatformException &&
+            e.code == GoogleSignIn.kSignInCanceledError) {
+          yield GoogleSignInCancelState();
+        }
         yield GoogleSignInFailState(e);
       }
     }

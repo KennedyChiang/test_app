@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_app/bloc/auth/auth_bloc.dart';
@@ -29,6 +30,23 @@ class MyApp extends StatelessWidget {
           builder: (providerContext) => BlocListener<AuthBloc, AuthState>(
             bloc: BlocProvider.of<AuthBloc>(providerContext),
             listener: (authContext, authState) {
+              if (authState is GoogleSignInFailState) {
+                showCupertinoDialog(
+                  context: context,
+                  builder: (dialogContext) => CupertinoAlertDialog(
+                    title: Text('Error'),
+                    content: Text(authState.error.toString()),
+                    actions: [
+                      CupertinoDialogAction(
+                        child: Text('OK'),
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }
               print('BlocListener got authState: $authState');
             },
             child: BlocBuilder<AuthBloc, AuthState>(

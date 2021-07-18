@@ -41,76 +41,92 @@ class _TwitterScreenState extends State<TwitterScreen> {
           return Center(child: CircularProgressIndicator(strokeWidth: 1.0));
         }
         final displayTweets = _tweetBloc.displayTweets;
-        return ListView.builder(
-          itemCount: displayTweets.length,
-          itemBuilder: (listContext, index) {
-            return Dismissible(
-              key: ValueKey(index),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                color: Colors.red,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                    size: 36.0,
+        bool hasTweet = displayTweets.isNotEmpty;
+        return RefreshIndicator(
+          onRefresh: () async {
+            _tweetBloc.add(ReadTweetEvent());
+            await Future.delayed(const Duration(seconds: 2));
+          },
+          child: ListView.separated(
+            itemCount: hasTweet ? displayTweets.length : 1,
+            itemBuilder: (listContext, index) {
+              if (false == hasTweet) {
+                return ListTile(
+                  title: Text(
+                    "Hi ${_authBloc.displayName}, \nyou don't have any tweet now.\nTap bottom-right floating button enjoy your first tweet ~",
+                    style: TextStyle(height: 1.5),
+                  ),
+                );
+              }
+              return Dismissible(
+                key: ValueKey(index),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  color: Colors.red,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                      size: 36.0,
+                    ),
                   ),
                 ),
-              ),
-              child: TweetCell(
-                tweet: displayTweets[index],
-                onTap: () {
-                  showCupertinoModalPopup(
-                    context: context,
-                    builder: (sheetContext) {
-                      return CupertinoActionSheet(
-                        actions: [
-                          CupertinoActionSheetAction(
-                            onPressed: () {
-                              Navigator.of(sheetContext).pop();
-                              showCupertinoModalPopup(
-                                context: context,
-                                semanticsDismissible: true,
-                                useRootNavigator: false,
-                                builder: (modalContext) => BlocProvider.value(
-                                  value: _authBloc,
-                                  child: BlocProvider.value(
-                                    value: _tweetBloc,
-                                    child: EditTweetScreen(
-                                      tweet: displayTweets[index],
+                child: TweetCell(
+                  tweet: displayTweets[index],
+                  onTap: () {
+                    showCupertinoModalPopup(
+                      context: context,
+                      builder: (sheetContext) {
+                        return CupertinoActionSheet(
+                          actions: [
+                            CupertinoActionSheetAction(
+                              onPressed: () {
+                                Navigator.of(sheetContext).pop();
+                                showCupertinoModalPopup(
+                                  context: context,
+                                  semanticsDismissible: true,
+                                  useRootNavigator: false,
+                                  builder: (modalContext) => BlocProvider.value(
+                                    value: _authBloc,
+                                    child: BlocProvider.value(
+                                      value: _tweetBloc,
+                                      child: EditTweetScreen(
+                                        tweet: displayTweets[index],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                            child: Text('Edit'),
-                          )
-                        ],
-                        cancelButton: CupertinoActionSheetAction(
-                          onPressed: () => Navigator.of(sheetContext).pop(),
-                          child: Text('cancel'),
-                        ),
-                      );
-                    },
-                  );
+                                );
+                              },
+                              child: Text('Edit'),
+                            )
+                          ],
+                          cancelButton: CupertinoActionSheetAction(
+                            onPressed: () => Navigator.of(sheetContext).pop(),
+                            child: Text('cancel'),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+                onDismissed: (direction) {
+                  if (direction == DismissDirection.endToStart) {
+                    _tweetBloc.add(
+                      DeleteTweetEvent(
+                        refKey: displayTweets[index]
+                            .time
+                            .microsecondsSinceEpoch
+                            .toString(),
+                      ),
+                    );
+                  }
                 },
-              ),
-              onDismissed: (direction) {
-                if (direction == DismissDirection.endToStart) {
-                  _tweetBloc.add(
-                    DeleteTweetEvent(
-                      refKey: displayTweets[index]
-                          .time
-                          .microsecondsSinceEpoch
-                          .toString(),
-                    ),
-                  );
-                }
-              },
-            );
-          },
+              );
+            },
+            separatorBuilder: (listContext, index) => Divider(),
+          ),
         );
       },
     );
