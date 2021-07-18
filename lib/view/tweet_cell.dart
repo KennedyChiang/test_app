@@ -6,8 +6,9 @@ import 'package:test_app/view/avatar.dart';
 
 class TweetCell extends StatelessWidget {
   final Tweet tweet;
+  final DateTime buildTime;
   final VoidCallback? onTap;
-  TweetCell({required this.tweet, this.onTap});
+  TweetCell({required this.tweet, required this.buildTime, this.onTap});
   @override
   Widget build(BuildContext context) {
     final _authBloc = BlocProvider.of<AuthBloc>(context);
@@ -28,7 +29,7 @@ class TweetCell extends StatelessWidget {
                 ),
               ),
               Text(
-                '．${tweet.intervalTime}',
+                '．${tweet.intervalTimeWith(flagTime: this.buildTime)}',
                 style: TextStyle(
                   fontSize: 12.0,
                   color: Colors.black54,

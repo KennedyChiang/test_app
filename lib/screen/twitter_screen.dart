@@ -42,6 +42,7 @@ class _TwitterScreenState extends State<TwitterScreen> {
         }
         final displayTweets = _tweetBloc.displayTweets;
         bool hasTweet = displayTweets.isNotEmpty;
+        DateTime buildTime = DateTime.now();
         return RefreshIndicator(
           onRefresh: () async {
             _tweetBloc.add(ReadTweetEvent());
@@ -75,6 +76,7 @@ class _TwitterScreenState extends State<TwitterScreen> {
                 ),
                 child: TweetCell(
                   tweet: displayTweets[index],
+                  buildTime: buildTime,
                   onTap: () {
                     showCupertinoModalPopup(
                       context: context,
