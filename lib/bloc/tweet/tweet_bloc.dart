@@ -18,8 +18,25 @@ class TweetBloc extends Bloc<TweetEvent, TweetState> {
   final BuildContext context;
   final DatabaseReference _realtimeDB = FirebaseDatabase.instance.reference();
   late DataSnapshot _readData;
+  late StreamSubscription _realtimeDBSubscription;
 
-  TweetBloc(this.context) : super(TweetInitial());
+  TweetBloc(this.context) : super(TweetInitial()) {
+    final id = BlocProvider.of<AuthBloc>(context).googleId ?? '';
+    _realtimeDBSubscription =
+        _realtimeDB.child(id).onValue.listen((Event event) {
+      if (event.snapshot.value != null) {
+        if (false == this.state is TweetInitial) {
+          this.add(ReadTweetEvent());
+        }
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _realtimeDBSubscription.cancel();
+    return super.close();
+  }
 
   @override
   Stream<TweetState> mapEventToState(
