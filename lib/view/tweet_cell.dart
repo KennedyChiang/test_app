@@ -16,7 +16,10 @@ class TweetCell extends StatelessWidget {
         authBloc: _authBloc,
         size: 40.0,
       ),
-      title: Text(tweet.content),
+      title: Text(
+        tweet.content,
+        maxLines: 10,
+      ),
       subtitle: Text(tweet.time.toIso8601String()),
       onTap: this.onTap,
     );
