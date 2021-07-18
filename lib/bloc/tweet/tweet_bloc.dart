@@ -109,11 +109,11 @@ class TweetBloc extends Bloc<TweetEvent, TweetState> {
 
   List<Tweet> get displayTweets {
     try {
-      final data = _readData.value as Map<Object?, Object?>;
       final id = BlocProvider.of<AuthBloc>(context).googleId ?? '';
       if (id.isEmpty) {
         return <Tweet>[];
       }
+      final data = _readData.value as Map<Object?, Object?>;
       final userData = data[id] as Map<Object?, Object?>;
       final result = userData.keys.map((time) {
         final tweetData = userData[time] as Map<Object?, Object?>;
