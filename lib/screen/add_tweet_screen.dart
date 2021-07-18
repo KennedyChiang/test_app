@@ -4,8 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_app/bloc/auth/auth_bloc.dart';
 import 'package:test_app/bloc/tweet/tweet_bloc.dart';
 import 'package:test_app/view/avatar.dart';
-
-const navigationBarItemWithConstraints = BoxConstraints.expand(width: 80.0);
+import 'package:test_app/view/navigation_bar_item.dart';
 
 class AddTweetScreen extends StatefulWidget {
   @override
@@ -61,29 +60,18 @@ class _AddTweetScreenState extends State<AddTweetScreen> {
     );
   }
 
-  Widget navigationBarItem({required String title, VoidCallback? onPressed}) {
-    return Opacity(
-      opacity: null == onPressed ? 0.5 : 1.0,
-      child: IconButton(
-        icon: Text(title),
-        constraints: navigationBarItemWithConstraints,
-        onPressed: onPressed,
-      ),
-    );
-  }
-
   /// getter
   ///
 
   AppBar get _appBar => AppBar(
         elevation: 0.0,
-        leading: navigationBarItem(
+        leading: NavigationBarItem(
           title: 'Cancel',
           onPressed: () => Navigator.of(context).pop(),
         ),
         leadingWidth: navigationBarItemWithConstraints.maxWidth,
         actions: [
-          navigationBarItem(
+          NavigationBarItem(
             title: 'Tweet',
             onPressed: _inputController.text.isEmpty
                 ? null
@@ -123,8 +111,7 @@ class _AddTweetScreenState extends State<AddTweetScreen> {
                 hintText: "What's happening?",
               ),
               onSubmitted: (text) {
-                // _textController.text += '\n';
-                // _focusNode.requestFocus();
+                _inputController.text += '\n';
               },
               onChanged: (_) => setState(() {}),
               keyboardType: TextInputType.multiline,
