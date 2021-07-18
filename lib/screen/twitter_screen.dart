@@ -6,6 +6,7 @@ import 'package:test_app/bloc/auth/auth_bloc.dart';
 import 'package:test_app/bloc/tweet/tweet_bloc.dart';
 import 'package:test_app/screen/add_tweet_screen.dart';
 import 'package:test_app/view/avatar.dart';
+import 'package:test_app/view/tweet_cell.dart';
 
 class TwitterScreen extends StatefulWidget {
   @override
@@ -31,11 +32,47 @@ class _TwitterScreenState extends State<TwitterScreen> {
   Widget get _body {
     return BlocBuilder<TweetBloc, TweetState>(
       builder: (tweetContext, tweetState) {
-        if (tweetState is TweetInitial) {
-          BlocProvider.of<TweetBloc>(context).add(ReadTweetEvent());
+        if (tweetState is TweetInitial ||
+            tweetState is CreateTweetSuccessState ||
+            tweetState is UpdateTweetSuccessState ||
+            tweetState is DeleteTweetSuccessState) {
+          _tweetBloc.add(ReadTweetEvent());
+          return Center(child: CircularProgressIndicator(strokeWidth: 1.0));
         }
-        return Center(
-          child: Text('Twitter Screen'),
+        final displayTweets = _tweetBloc.displayTweets;
+        return ListView.builder(
+          itemCount: displayTweets.length,
+          itemBuilder: (listContext, index) {
+            return Dismissible(
+              key: ValueKey(index),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                color: Colors.red,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                    size: 36.0,
+                  ),
+                ),
+              ),
+              child: TweetCell(tweet: displayTweets[index]),
+              onDismissed: (direction) {
+                if (direction == DismissDirection.endToStart) {
+                  _tweetBloc.add(
+                    DeleteTweetEvent(
+                      refKey: displayTweets[index]
+                          .time
+                          .microsecondsSinceEpoch
+                          .toString(),
+                    ),
+                  );
+                }
+              },
+            );
+          },
         );
       },
     );
