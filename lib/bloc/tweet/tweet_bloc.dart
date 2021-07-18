@@ -35,8 +35,7 @@ class TweetBloc extends Bloc<TweetEvent, TweetState> {
         final data = <String, dynamic>{
           'content': event.content,
         };
-        final time = DateTime.now().toUtc().microsecondsSinceEpoch.toString();
-        _realtimeDB.child(id).child(time).set(data);
+        _realtimeDB.child(id).child(_timeKey).set(data);
         yield CreateTweetSuccessState();
       } catch (e) {
         debugPrint('CreateTweetEvent got exception: $e');
@@ -65,11 +64,9 @@ class TweetBloc extends Bloc<TweetEvent, TweetState> {
           yield TweetActionFailState(error: 'could not get user id');
           return;
         }
-        final updateTime =
-            DateTime.now().toUtc().microsecondsSinceEpoch.toString();
         final data = <String, dynamic>{
           'content': event.content,
-          'update_time': updateTime,
+          'update_time': _timeKey,
         };
         _realtimeDB.child(id).child(event.refKey).update(data);
         yield UpdateTweetSuccessState();
@@ -132,4 +129,7 @@ class TweetBloc extends Bloc<TweetEvent, TweetState> {
       return <Tweet>[];
     }
   }
+
+  String get _timeKey =>
+      DateTime.now().toUtc().microsecondsSinceEpoch.toString();
 }
